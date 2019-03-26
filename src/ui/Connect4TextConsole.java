@@ -3,6 +3,19 @@
 package ui;
 import core.Connect4;
 import java.util.Scanner;
+import ui.Connect4GUI;
+
+//JavaFX
+import javafx.application.Application;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Ellipse;
 
 /**
  * Handles the Connect 4 game's interaction with console.
@@ -20,12 +33,14 @@ public class Connect4TextConsole {
      * @param args - Default args
      */
     public static void main (String args[]) {
+    	
+    	
         Scanner scan = new Scanner(System.in);
         System.out.println("Connect4");
         String mode;
         int pvp;
 
-        System.out.print("Enter p for pvp\nEnter c to play against a computer: ");
+        System.out.print("Enter p for Human vs. Human \nEnter c to play against a computer: ");
         mode = scan.nextLine();
 
         while(!(mode.equals("p") || mode.equals("c") || mode.equals("P") || mode.equals("C"))){

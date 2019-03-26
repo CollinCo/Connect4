@@ -110,10 +110,10 @@ public class Connect4 {
         // horizontal check
         for (int j = 0; j < HEIGHT - 2; j++ ){
             for (int i = 0; i < WIDTH; i++){
-                if (board[i][j] == icon &&
-                        board[i][j + 1] == icon &&
-                        board[i][j + 2] == icon &&
-                        board[i][j + 3] == icon){
+                if (board[i][j] == icon && 
+                		board[i][j + 1] == icon && 
+                		board[i][j + 2] == icon && 
+                		board[i][j + 3] == icon){
                     return true;
                 }
             }
