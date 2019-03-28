@@ -17,6 +17,7 @@ public class Connect4ComputerPlayer {
 
     /**
      * Computer algorithm to take a turn for connect 4
+     * @param board - 2d array of chars representing the board
      * @return - row that the computer chose for the turn
      */
     public int takeTurn(char[][] board){
