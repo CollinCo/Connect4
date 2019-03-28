@@ -90,8 +90,16 @@ public class Connect4 {
         // tile successfully placed - returns checkWin bool val
         return checkWin(turn);
     }
-    
+    /**
+     * turn method used by Connect4GUI class
+     * PLaces a token in the grid either by a player or by a computer
+     * @param isRed - player turn - Red = player, !Red = yellow (or computer)
+     * @param col - column chip is placed
+     * @param row - row chip is placed
+     * @return column chip is placed at in finish
+     */
     public int takeTurnGUI(boolean isRed, int col, int row) {
+    	
     	// computer turn
     	if(!isRed && pvp == 1) {
     		int computerTurn = computer.takeTurn(board);
@@ -99,13 +107,12 @@ public class Connect4 {
     		for(int i = 0; i < HEIGHT; i++) {
     			if(board[i][computerTurn] == ' ') {
     	    		board[i][computerTurn] = 'O';
-    	    		this.toString();
     	    		return computerTurn;
     			}
     		}
     	}
     		
-    	//System.out.println("Got to take Turn, Row: " + row);
+    	// Placing player token for backend
     	for(int i = 0; i < HEIGHT; i++) {
             if (board[i][col] == ' ') {
 		    	if(isRed) {
@@ -118,7 +125,6 @@ public class Connect4 {
             }
     	}
     	return -1;
-    	//return checkWin(isRed ? 1: 0);
     }
 
     /***

@@ -161,8 +161,9 @@ public class Connect4GUI extends Application {
 			return;
 		}
 		
-		boolean win = Connect4.checkWin(redMove ? 1 : 0);
-		
+		if(Connect4.checkWin(redMove ? 1 : 0))
+			gameOver();
+			
 		if(compTurn != -1) 
 			column = compTurn;
 		
@@ -195,13 +196,13 @@ public class Connect4GUI extends Application {
 	 */
 	private void gameOver() {
 		Label endLabel = new Label();
-		
 		if(totalTokens == 41) 
 			endLabel.setText("Draw: board full");
 		else if(pvp)
-			endLabel.setText("Winner: " + (redMove ? "Yellow" : "Red"));
+			endLabel.setText("Winner: " + (redMove ? "Red" : "Yellow"));
 		else
-			endLabel.setText("Winner: " + (redMove ? "Computer" : "You"));
+			endLabel.setText("Winner: " + (redMove ? "You" : "Computer"));
+		
 		Button exitButton = new Button("Exit");
 		exitButton.setOnAction(e -> window.close());
 		
@@ -227,6 +228,9 @@ public class Connect4GUI extends Application {
 		return Optional.ofNullable( grid[column][row]);
 	}
 	
+	/**
+	 * Disc class renders disc objects on the connect4 board
+	 */
 	private static class Disc extends Circle {
 		
 		private final boolean red;
@@ -241,7 +245,7 @@ public class Connect4GUI extends Application {
 	}
 	
 	/**
-	 * Runs startup
+	 * Runs startup if this is main class 
 	 */
 	public static void main(String args[]) {
 		launch(args);

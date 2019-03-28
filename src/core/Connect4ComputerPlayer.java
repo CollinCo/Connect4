@@ -28,7 +28,6 @@ public class Connect4ComputerPlayer {
         int def = checkBoard(board, 'O');
         if(def != -1)
             return def;
-        System.out.println("random");
         // No potential win - random row
         return Math.abs(rand.nextInt() % 6 + 1);
     }
