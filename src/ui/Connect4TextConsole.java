@@ -2,6 +2,8 @@
 // Project 2
 package ui;
 import core.Connect4;
+import ui.Connect4GUI;
+
 import java.util.Scanner;
 import ui.Connect4GUI;
 
@@ -40,7 +42,21 @@ public class Connect4TextConsole {
         String mode;
         int pvp;
 
-        System.out.print("Enter p for Human vs. Human \nEnter c to play against a computer: ");
+        System.out.print("Enter g for GUI or t for text console: ");
+        mode = scan.nextLine();
+        
+
+        while(!(mode.equals("g") || mode.equals("G") || mode.equals("t") || mode.equals("T"))){
+            System.out.println("Please input a g or a t");
+            mode = scan.nextLine();
+        }
+        
+        if(mode.equals("g") || mode.equals("G")) {
+        	Connect4GUI.main(args);
+            return;
+        } 
+        
+        System.out.print("Enter p for Human vs. Human or enter c to play against a computer: ");
         mode = scan.nextLine();
 
         while(!(mode.equals("p") || mode.equals("c") || mode.equals("P") || mode.equals("C"))){

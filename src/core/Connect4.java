@@ -90,6 +90,40 @@ public class Connect4 {
         // tile successfully placed - returns checkWin bool val
         return checkWin(turn);
     }
+    
+    public int takeTurnGUI(boolean isRed, int col, int row) {
+    	// computer turn
+    	if(!isRed && pvp == 1) {
+    		int computerTurn = computer.takeTurn(board);
+    		System.out.println(computerTurn);
+    		
+    		for(int i = 0; i < HEIGHT; i++) {
+    			if(board[i][computerTurn] == ' ') {
+    	    		board[i][computerTurn] = 'O';
+    	    		this.toString();
+    	    		return computerTurn;
+    			}
+    		}
+    	}
+    		
+    	//System.out.println("Got to take Turn, Row: " + row);
+    	for(int i = 0; i < HEIGHT; i++) {
+            if (board[i][col] == ' ') {
+		    	if(isRed) {
+		    		board[i][col] = 'X';
+		        	System.out.println(this.toString());
+		    		return 0;
+		    	} else { 
+		    		board[i][col] = 'O';
+		        	System.out.println(this.toString());
+		    		return 0;
+		    	}
+            }
+    	}
+    	System.out.println(this.toString());
+    	return -1;
+    	//return checkWin(isRed ? 1: 0);
+    }
 
     /***
      * Checks for a win.
@@ -98,7 +132,7 @@ public class Connect4 {
      * @param turn - player that has currently went - icon to check for
      * @return whether or not a player wins
      */
-    private static boolean checkWin(int turn) {
+    public static boolean checkWin(int turn) {
 
         // Sets icon to check for win
         char icon;

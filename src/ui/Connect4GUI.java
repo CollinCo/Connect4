@@ -1,152 +1,242 @@
 package ui;
 import core.Connect4;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 // JavaFX
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.Rectangle;
 
-
-
-
+/**
+ * Handles the UI for the Connect 4 game.
+ * Created using JavaFX
+ * @author collin
+ */
 public class Connect4GUI extends Application {
 	
-	// Dimensions of the Grid
-	final int WIDTH  = 7;
-	final int HEIGHT = 6;
-
-	// Indicate which player has a turn, initially it is the X player
-    private char whoseTurn = 'X';
-    
-    // Create and initialize cell
-    private Cell[][] cell = new Cell[HEIGHT][WIDTH];
-    
-    // Create and initialize a status label
+	static final int TILE_SIZE = 80;
+	static final int COLUMNS = 7;
+	static final int ROWS    = 6;
+	private boolean  redMove  = true;
+	private boolean pvp;
+	
+	private Scene intro;
+	private Scene exit;
+	private Stage window;
+	
+	private Connect4 board;
+	private Disc[][] grid = new Disc[COLUMNS][ROWS]; 
+	private Pane discRoot = new Pane();
     private Label lblStatus = new Label("Red's turn to play");
- 
-    // main created for testing
+	
+    /**
+     * Starts up game with new window that prompts users to either play
+     * player versus player or player versus computer.
+     */
+	public void start(Stage stage) throws Exception {
+		
+		window = stage;
+		Label label1 = new Label("Welcome to connect 4");
+		Button pvp = new Button("Player Versus Player");
+		Button pve = new Button("Player Versus Computer");
+		
+		pvp.setOnAction(e -> window.setScene(new Scene(createContent(true))));
+		pve.setOnAction(e -> window.setScene(new Scene(createContent(false))));
+
+		VBox layout1 = new VBox(20);
+		layout1.getChildren().addAll(label1, pvp, pve);
+		intro = new Scene(layout1, 200, 200);
+		
+		stage.show();
+		window.setScene(intro);
+		window.show();
+	}
+	
+	/**
+	 * Creates board with pane
+	 * @param isPvp - true = player versus player; false = player versus computer
+	 * @return the completed pane.
+	 */
+	private Parent createContent(boolean isPvp) {
+		board = isPvp ? new Connect4(0) : new Connect4(1);
+		pvp = isPvp;
+		
+		Pane root = new Pane();
+		root.getChildren().add(discRoot);
+		Shape gridShape = buildGrid();
+		root.getChildren().add(gridShape);
+		root.getChildren().addAll(makeColumns());
+		 
+		BorderPane borderPane = new BorderPane();
+		borderPane.setCenter(root);
+		
+		borderPane.setBottom(lblStatus);
+		
+		return borderPane;
+	}
+	/**
+	 * Creates the background shape for the discs to fit into
+	 * @return the completed grid
+	 */
+	private Shape buildGrid() {
+		Shape shape = new Rectangle((COLUMNS + 1) * TILE_SIZE, (ROWS + 1) * TILE_SIZE);
+		
+		for(int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLUMNS; j++) {
+				Circle circle = new Circle(TILE_SIZE / 2);
+				circle.setCenterX(TILE_SIZE / 2);
+				circle.setCenterY(TILE_SIZE / 2);
+				circle.setTranslateX(j * (TILE_SIZE + 5) + TILE_SIZE / 4);
+				circle.setTranslateY(i * (TILE_SIZE + 5) + TILE_SIZE / 4);
+				shape = Shape.subtract(shape, circle);
+			}
+		}
+		shape.setFill(Color.BLUE);
+		return shape;
+	}
+	
+	/**
+	 * builds the grid of disc objects. These discs are the game peices
+	 * @return
+	 */
+	private List<Rectangle> makeColumns(){
+		List<Rectangle> list = new ArrayList<>();
+		for(int i = 0; i < COLUMNS; i++) {
+			Rectangle rect = new Rectangle((TILE_SIZE), (ROWS + 1) * TILE_SIZE);
+			rect.setTranslateX(i * (TILE_SIZE + 5) + TILE_SIZE / 4);
+			rect.setFill(Color.TRANSPARENT);
+			
+			rect.setOnMouseEntered(e -> rect.setFill(Color.rgb(50, 50, 200, .3)));
+			rect.setOnMouseExited(e -> rect.setFill(Color.TRANSPARENT));
+			
+			final int column = i;
+			rect.setOnMouseClicked(e -> placeDisc(new Disc(redMove), column));
+			list.add(rect);
+		}
+		return list;
+	}
+	/**
+	 * Handles players taking turns placing discs in the columns.
+	 * @param disc - disc to be placed
+	 * @param column - column that the disc should be placed in
+	 */
+	private void placeDisc(Disc disc, int column) {
+		int row = ROWS - 1;
+		int compTurn = -1;
+		
+		// if comp turn
+		if(!redMove && !pvp) {
+			compTurn = board.takeTurnGUI(redMove, column, ROWS - row - 1);
+		} else {
+			board.takeTurnGUI(redMove, column, ROWS - row);
+		}
+		
+		do {
+			if(!getDisc(column, row).isPresent()) {
+				break;
+			}
+			row--;
+			
+ 		} while(row >= 0);
+		
+		if(row < 0) {
+			return;
+		}
+		
+		boolean win = Connect4.checkWin(redMove ? 1 : 0);
+		
+		if(compTurn != -1)
+			column = compTurn;
+		System.out.println("GUI PLayer: col, row : " + column + " " + row);
+		
+		System.out.println();
+		grid[column][row] = disc;
+		discRoot.getChildren().add(disc);
+		disc.setTranslateX(column * (TILE_SIZE + 5) + TILE_SIZE / 4);
+		disc.setTranslateY(row * (TILE_SIZE + 5) + TILE_SIZE / 4);
+		
+
+		redMove = !redMove;
+		
+
+		if(!redMove) {
+			lblStatus.setText("Yellow's turn to play!");
+		} else {
+			lblStatus.setText("Red's turn to play!");
+		}
+		if(!redMove && win) {
+			lblStatus.setText("Red won!");
+			gameOver();
+		} 
+		if(redMove && win) {
+			lblStatus.setText("Yellow won!");
+			gameOver();
+		}
+	}
+	
+	/**
+	 * Game over screen - Displays winner and exit button
+	 */
+	private void gameOver() {
+		Label endLabel = new Label();
+		endLabel.setText("Winner!: " + (redMove ? "Yellow" : "Red"));
+		
+		Button exitButton = new Button("Exit");
+		exitButton.setOnAction(e -> window.close());
+		
+		VBox layout1 = new VBox(20);
+		layout1.getChildren().addAll(endLabel, exitButton);
+		exit = new Scene(layout1, 200, 200);
+		window.setScene(exit);		
+	}
+
+	
+	/**
+	 * Returns whether a disc object in the slot at the passed in row and column
+	 * @param column - x coord of disc
+	 * @param row - y cood of disc
+	 * @return - returns the disc object at the point if it exists
+	 */
+	private Optional<Disc> getDisc(int column, int row){
+		
+		if(column < 0 || column >= COLUMNS || row < 0 || row >= ROWS) {
+			return Optional.empty();
+		}
+		
+		return Optional.ofNullable( grid[column][row]);
+	}
+	
+	private static class Disc extends Circle {
+		
+		private final boolean red;
+		
+		public Disc(boolean red) {
+			super((TILE_SIZE / 2), red ? Color.RED : Color.YELLOW);
+			this.red = red;
+			
+			setCenterX(TILE_SIZE / 2);
+			setCenterY(TILE_SIZE / 2);		
+		}
+	}
+	
+	/**
+	 * Runs startup
+	 */
 	public static void main(String args[]) {
 		launch(args);
 	}
- 
-    @Override // Override the start method in the Application class
-    public void start(Stage primaryStage) {
-    
-    	// Pane to hold cell grid
-    	GridPane pane = new GridPane();
-	
-    	for (int i = 0; i < HEIGHT; i++) {
-    		for(int j = 0; j < WIDTH; j++) {
-     			pane.add(cell[i][j] = new Cell(), j, i);
-    		}
-		}
-    	
-		BorderPane borderPane = new BorderPane();
-		borderPane.setCenter(pane);
-		borderPane.setBottom(lblStatus);
-		
-		// Create a scene and place it in the stage
-		Scene scene = new Scene(borderPane, 700, 600);
-		primaryStage.setTitle("Connect4"); // Set the stage title
-		primaryStage.setScene(scene); // Place the scene in the stage
-		primaryStage.show(); // Display the stage
-    }
-    
-  //Case Study: Developing a Tic-Tac-Toe Game
 
-
-    // An inner class for a cell
-    public class Cell extends Pane 
-    {
-        // Token used for this cell
-        private char token = ' ';
-
-        public Cell() {
-    	 	setStyle("-fx-border-color: black");
-    	 	this.setPrefSize(2000, 2000);
-    	 	this.setOnMouseClicked(e -> handleMouseClick());
-        }
-
-        /** Return token */
-        public char getToken() {
-        	return token;
-        }
-
-        /** Set a new token */
-        public void setToken(char c) {
-    	 	token = c;
-    	
-    	 	if (token == 'X') {
-    	 	    Ellipse ellipse = new Ellipse(this.getWidth() / 2,
-    	 	    this.getHeight() / 2, this.getWidth() / 2 - 10,
-    	 	    this.getHeight() / 2 - 10);
-    	 	    ellipse.centerXProperty().bind(this.widthProperty().divide(2));
-    	 	    ellipse.centerYProperty().bind(this.heightProperty().divide(2));
-    		    ellipse.radiusXProperty().bind(this.widthProperty().divide(2).subtract(10));
-    	 	    ellipse.radiusYProperty().bind(this.heightProperty().divide(2).subtract(10));
-    		    ellipse.setStroke(Color.RED);
-    	 	    ellipse.setFill(Color.RED);
-    		    getChildren().add(ellipse); // Add the ellipse to the pane
-    	 	}
-    	 	else if (token == 'O') {
-    	 	    Ellipse ellipse = new Ellipse(this.getWidth() / 2,
-    	 	    this.getHeight() / 2, this.getWidth() / 2 - 10,
-    	 	    this.getHeight() / 2 - 10);
-    	 	    ellipse.centerXProperty().bind(this.widthProperty().divide(2));
-    	 	    ellipse.centerYProperty().bind(this.heightProperty().divide(2));
-    		    ellipse.radiusXProperty().bind(this.widthProperty().divide(2).subtract(10));
-    	 	    ellipse.radiusYProperty().bind(this.heightProperty().divide(2).subtract(10));
-    		    ellipse.setStroke(Color.GREEN);
-    	 	    ellipse.setFill(Color.GREEN);
-    		    getChildren().add(ellipse); // Add the ellipse to the pane
-    	 	}
-        }
-
-        private boolean isWon(char player) {
-        	return false;
-        }
-        
-        private boolean isFull() {
-        	return false;
-        }
-        
-        private String turnToString(char whoseTurn) {
-        	return (whoseTurn == 'X') ? "Red" : "Green";
-        }
-        
-        /* Handle a mouse click event */
-        private void handleMouseClick() {
-        	
-        	
-        	
-        	// If cell is empty and game is not over
-        	if (token == ' ' && whoseTurn != ' ') {
-        		
-        		
-        		setToken(whoseTurn); // Set token in the cell
-    	
-    	 	    // Check game status
-    	 	    if (isWon(whoseTurn)) {
-    	 	    	lblStatus.setText(turnToString(whoseTurn) + " won! The game is over");
-    	 	    	whoseTurn = ' '; // Game is over
-    	 	    }
-    	 	    else if (isFull()) {
-    	 	    	lblStatus.setText("Draw! The game is over");
-    	 	    	whoseTurn = ' '; // Game is over
-    	 	    }
-    	 	    else {
-    	 	    	// Change the turn
-    	 	    	whoseTurn = (whoseTurn == 'X') ? 'O' : 'X';
-    	 	    	// Display whose turn
-    	 	    	lblStatus.setText(turnToString(whoseTurn) + "'s turn");
-    	  	    }
-        	}
-        }	
-    }
- }
+}

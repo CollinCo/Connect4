@@ -13,10 +13,6 @@ public class Connect4ComputerPlayer {
     private final int WIDTH = 7;
     private final char BLANK = ' ';
 
-    //static Connect4 board;
-
-    //public Connect4ComputerPlayer(Connect4 board) {this.board = board;}
-
     private static Random rand = new Random();
 
     /**
@@ -32,9 +28,9 @@ public class Connect4ComputerPlayer {
         int def = checkBoard(board, 'O');
         if(def != -1)
             return def;
-
+        System.out.println("random");
         // No potential win - random row
-        return rand.nextInt() % 7 + 1;
+        return Math.abs(rand.nextInt() % 7 + 1);
     }
 
     /**
