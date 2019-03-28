@@ -30,7 +30,7 @@ public class Connect4ComputerPlayer {
             return def;
         System.out.println("random");
         // No potential win - random row
-        return Math.abs(rand.nextInt() % 7 + 1);
+        return Math.abs(rand.nextInt() % 6 + 1);
     }
 
     /**

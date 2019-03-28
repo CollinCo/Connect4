@@ -95,7 +95,6 @@ public class Connect4 {
     	// computer turn
     	if(!isRed && pvp == 1) {
     		int computerTurn = computer.takeTurn(board);
-    		System.out.println(computerTurn);
     		
     		for(int i = 0; i < HEIGHT; i++) {
     			if(board[i][computerTurn] == ' ') {
@@ -111,16 +110,13 @@ public class Connect4 {
             if (board[i][col] == ' ') {
 		    	if(isRed) {
 		    		board[i][col] = 'X';
-		        	System.out.println(this.toString());
 		    		return 0;
 		    	} else { 
 		    		board[i][col] = 'O';
-		        	System.out.println(this.toString());
 		    		return 0;
 		    	}
             }
     	}
-    	System.out.println(this.toString());
     	return -1;
     	//return checkWin(isRed ? 1: 0);
     }

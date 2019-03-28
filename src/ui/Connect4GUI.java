@@ -32,6 +32,7 @@ public class Connect4GUI extends Application {
 	static final int ROWS    = 6;
 	private boolean  redMove  = true;
 	private boolean pvp;
+	private int totalTokens = 0;
 	
 	private Scene intro;
 	private Scene exit;
@@ -136,10 +137,14 @@ public class Connect4GUI extends Application {
 	private void placeDisc(Disc disc, int column) {
 		int row = ROWS - 1;
 		int compTurn = -1;
+		if(totalTokens == 41) {
+			gameOver();
+		}
 		
 		// if comp turn
 		if(!redMove && !pvp) {
 			compTurn = board.takeTurnGUI(redMove, column, ROWS - row - 1);
+			column = compTurn;
 		} else {
 			board.takeTurnGUI(redMove, column, ROWS - row);
 		}
@@ -158,11 +163,9 @@ public class Connect4GUI extends Application {
 		
 		boolean win = Connect4.checkWin(redMove ? 1 : 0);
 		
-		if(compTurn != -1)
+		if(compTurn != -1) 
 			column = compTurn;
-		System.out.println("GUI PLayer: col, row : " + column + " " + row);
 		
-		System.out.println();
 		grid[column][row] = disc;
 		discRoot.getChildren().add(disc);
 		disc.setTranslateX(column * (TILE_SIZE + 5) + TILE_SIZE / 4);
@@ -171,20 +174,20 @@ public class Connect4GUI extends Application {
 
 		redMove = !redMove;
 		
-
-		if(!redMove) {
-			lblStatus.setText("Yellow's turn to play!");
+		if(pvp) {
+			if(!redMove) {
+				lblStatus.setText("Yellow's turn to play!");
+			} else {
+				lblStatus.setText("Red's turn to play!");
+			}
 		} else {
-			lblStatus.setText("Red's turn to play!");
+			if(!redMove) {
+				lblStatus.setText("Computer's turn, click to continue");
+			} else {
+				lblStatus.setText("Your turn to play!");
+			}
 		}
-		if(!redMove && win) {
-			lblStatus.setText("Red won!");
-			gameOver();
-		} 
-		if(redMove && win) {
-			lblStatus.setText("Yellow won!");
-			gameOver();
-		}
+		totalTokens++;
 	}
 	
 	/**
@@ -192,8 +195,13 @@ public class Connect4GUI extends Application {
 	 */
 	private void gameOver() {
 		Label endLabel = new Label();
-		endLabel.setText("Winner!: " + (redMove ? "Yellow" : "Red"));
 		
+		if(totalTokens == 41) 
+			endLabel.setText("Draw: board full");
+		else if(pvp)
+			endLabel.setText("Winner: " + (redMove ? "Yellow" : "Red"));
+		else
+			endLabel.setText("Winner: " + (redMove ? "Computer" : "You"));
 		Button exitButton = new Button("Exit");
 		exitButton.setOnAction(e -> window.close());
 		
