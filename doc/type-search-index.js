@@ -1,1 +1,1 @@
-typeSearchIndex = [{"p":"core","l":"Connect4"},{"p":"core","l":"Connect4ComputerPlayer"},{"p":"ui","l":"Connect4GUI"},{"p":"ui","l":"Connect4TextConsole"}]
+typeSearchIndex = [{"p":"core","l":"Connect4"}]

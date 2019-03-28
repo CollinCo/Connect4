@@ -8,7 +8,7 @@ import java.util.Scanner;
  * contains methods to handle turn taking and returns whether a win is detected
  * contains a method to return the current layout of the board as a string
  * @author Collin Connolly
- * @version 1.1
+ * @version 4
  */
 public class Connect4 {
 
