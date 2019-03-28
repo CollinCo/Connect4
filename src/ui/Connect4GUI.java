@@ -149,6 +149,7 @@ public class Connect4GUI extends Application {
 			board.takeTurnGUI(redMove, column, ROWS - row);
 		}
 		
+		// dropping down disc
 		do {
 			if(!getDisc(column, row).isPresent()) {
 				break;
